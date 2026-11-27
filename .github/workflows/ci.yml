@@ -44,6 +44,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build image
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: services/api
+          load: true
+          tags: ghcr.io/praveenkumargurumoorthy/taskhub-api:${{ github.sha }}
+
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: image
+          image-ref: ghcr.io/praveenkumargurumoorthy/taskhub-api:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
       - name: Log in to GHCR
         if: github.event_name == 'push'
         uses: docker/login-action@v4.0.0
@@ -52,9 +68,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
-        uses: docker/build-push-action@v7.4.0
-        with:
-          context: services/api
-          push: ${{ github.event_name == 'push' }}
-          tags: ghcr.io/praveenkumargurumoorthy/taskhub-api:${{ github.sha }}
+      - name: Push image
+        if: github.event_name == 'push'
+        run: docker push ghcr.io/praveenkumargurumoorthy/taskhub-api:${{ github.sha }}

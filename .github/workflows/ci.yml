@@ -33,3 +33,19 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: "1"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: services/api
+          push: false
+          tags: ghcr.io/praveenkumargurumoorthy/taskhub-api:${{ github.sha }}

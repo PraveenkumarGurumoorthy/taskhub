@@ -24,3 +24,12 @@ jobs:
       - name: Run tests
         working-directory: services/api
         run: pytest -v
+
+      - name: Security scan (Trivy)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: services/api
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"

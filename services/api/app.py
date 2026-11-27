@@ -1,4 +1,4 @@
-﻿from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -7,7 +7,7 @@ tasks = []
 
 @app.route("/health")
 def health():
-    return jsonify(status="broken")
+    return jsonify(status="ok")
 
 
 @app.route("/tasks", methods=["GET"])
